@@ -103,14 +103,17 @@ Rules without a `logic_version` are **always enabled**:
 
 ## Audit Trail
 
-The `Verify()` function replays logic to prove transformations are legal:
+The `verify()` function replays logic to prove transformations are legal:
 
-```go
-// Prove that newJSON was derived from oldJSON
-valid, err := tenet.Verify(newJSON, oldJSON)
+```typescript
+import { verify } from '@dlovans/tenet-core';
+
+// Prove that newSchema was derived from oldSchema
+const result = verify(newSchema, oldSchema);
+console.log(result.valid); // true if transformation is legal
 ```
 
-This re-runs `oldJSON` through the VM and compares the result with `newJSON`. If values match, the transformation is valid.
+This re-runs `oldSchema` through the VM and compares the result with `newSchema`. If values match, the transformation is valid.
 
 ---
 

@@ -1,93 +1,19 @@
 # API Reference
 
-## Go
-
-### Installation
-
-```bash
-go get github.com/dlovans/tenet/pkg/tenet
-```
-
-### Run
-
-Execute schema logic for a given effective date.
-
-```go
-import (
-    "time"
-    "github.com/dlovans/tenet/pkg/tenet"
-)
-
-result, err := tenet.Run(jsonString, time.Now())
-if err != nil {
-    // Parse or execution error
-}
-
-// result is JSON string with computed state, errors, status
-```
-
-### Verify
-
-Check that a transformation is legal by replaying the logic.
-
-```go
-valid, err := tenet.Verify(newJSON, oldJSON)
-if err != nil {
-    // Verification failed
-}
-// valid == true means transformation is legal
-```
-
----
-
-## CLI
-
-### Installation
-
-```bash
-go build -o tenet ./cmd/tenet
-```
-
-### Run
-
-```bash
-# From file
-tenet run -file schema.json -date 2026-01-20
-
-# From stdin
-cat schema.json | tenet run -date 2026-01-20
-```
-
-### Verify
-
-```bash
-tenet verify -new completed.json -base schema.json
-```
-
-### Lint
-
-Static analysis of schema files (no WASM required).
-
-```bash
-tenet lint -file schema.json
-```
-
----
-
 ## JavaScript / TypeScript
 
 ### Installation
 
 ```bash
-npm install @dlovans/tenet
+npm install @dlovans/tenet-core
 ```
 
 ### Browser Setup
 
 ```html
-<script src="node_modules/@dlovans/tenet/wasm/wasm_exec.js"></script>
+<script src="node_modules/@dlovans/tenet-core/wasm/wasm_exec.js"></script>
 <script type="module">
-import { init, run, verify } from '@dlovans/tenet';
+import { init, run, verify } from '@dlovans/tenet-core';
 
 await init('/path/to/tenet.wasm');
 </script>
@@ -96,16 +22,16 @@ await init('/path/to/tenet.wasm');
 ### Node.js Setup
 
 ```javascript
-import { init, run, verify, lint } from '@dlovans/tenet';
+import { init, run, verify, lint } from '@dlovans/tenet-core';
 
 // Initialize WASM (required for run/verify)
-await init('./node_modules/@dlovans/tenet/wasm/tenet.wasm');
+await init('./node_modules/@dlovans/tenet-core/wasm/tenet.wasm');
 ```
 
 ### Run
 
 ```typescript
-import { run, TenetResult } from '@dlovans/tenet';
+import { run, TenetResult } from '@dlovans/tenet-core';
 
 const schema = {
   definitions: {
@@ -127,12 +53,12 @@ if (result.error) {
 ### Verify
 
 ```typescript
-import { verify, VerifyResult } from '@dlovans/tenet';
+import { verify, TenetVerifyResult } from '@dlovans/tenet-core';
 
-const result: VerifyResult = verify(newSchema, oldSchema);
+const result: TenetVerifyResult = verify(newSchema, oldSchema);
 
 console.log(result.valid); // true or false
-console.log(result.error); // Error message if failed
+console.log(result.error); // Error message if invalid
 ```
 
 ### Lint
@@ -140,14 +66,24 @@ console.log(result.error); // Error message if failed
 **Note:** Lint is pure TypeScript — no WASM init required!
 
 ```typescript
-import { lint } from '@dlovans/tenet';
+import { lint, LintResult } from '@dlovans/tenet-core';
 
-const issues = lint(schema);
+const result: LintResult = lint(schema);
 
-for (const issue of issues) {
+console.log(result.valid); // true if no errors
+
+for (const issue of result.issues) {
   console.log(`${issue.severity}: ${issue.message}`);
+  // severity: 'error' | 'warning' | 'info'
 }
 ```
+
+The linter performs 5 static checks:
+1. **Schema identification** — Suggests adding `protocol` or `$schema`
+2. **Undefined variables** — Detects `{ "var": "x" }` where `x` isn't defined
+3. **Potential cycles** — Warns when multiple rules set the same field
+4. **Temporal validation** — Checks `temporal_map` entries have `logic_version`
+5. **Missing types** — Warns when definitions lack a `type`
 
 ### Reactive UI Pattern
 
@@ -245,5 +181,22 @@ interface ValidationError {
   rule_id?: string;
   message: string;
   law_ref?: string;
+}
+
+interface LintResult {
+  valid: boolean;
+  issues: LintIssue[];
+}
+
+interface LintIssue {
+  severity: 'error' | 'warning' | 'info';
+  field?: string;
+  rule?: string;
+  message: string;
+}
+
+interface TenetVerifyResult {
+  valid: boolean;
+  error?: string;
 }
 ```

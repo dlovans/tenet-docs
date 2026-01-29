@@ -1,6 +1,20 @@
 # Verification Algorithm
 
-The `Verify()` function proves that a completed document was correctly derived from a base schema by simulating the user's journey step-by-step.
+The `verify()` function proves that a completed document was correctly derived from a base schema by simulating the user's journey step-by-step.
+
+## Usage
+
+```typescript
+import { verify } from '@dlovans/tenet-core';
+
+const result = verify(completedDoc, baseSchema);
+
+if (result.valid) {
+  console.log('Document transformation is legal');
+} else {
+  console.log('Invalid transformation:', result.error);
+}
+```
 
 ## Problem
 

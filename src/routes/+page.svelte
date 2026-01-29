@@ -21,7 +21,7 @@
             class="inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-medium gap-1 bg-transparent text-foreground hover:bg-accent transition-colors"
         >
             <span class="flex size-2 rounded-full bg-blue-500"></span>
-            Tenet v1.0 Public Beta
+            Tenet v0.1.1 Public Beta
             <ChevronRight class="h-3 w-3 text-muted-foreground" />
         </a>
 

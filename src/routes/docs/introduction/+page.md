@@ -83,11 +83,8 @@ Because Tenet is a general-purpose declarative logic engine, developers have fou
 ## Installation
 
 ```bash
-# Go
-go get github.com/dlovans/tenet/pkg/tenet
-
 # npm (browser + Node.js)
-npm install @dlovans/tenet
+npm install @dlovans/tenet-core
 ```
 
 ## Next Steps
