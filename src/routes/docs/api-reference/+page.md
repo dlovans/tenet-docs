@@ -85,6 +85,25 @@ The linter performs 5 static checks:
 4. **Temporal validation** — Checks `temporal_map` entries have `logic_version`
 5. **Missing types** — Warns when definitions lack a `type`
 
+### Utility Functions
+
+```typescript
+import { isReady, isTenetSchema, SCHEMA_URL } from '@dlovans/tenet-core';
+
+// Check if WASM is initialized
+if (isReady()) {
+  const result = run(schema);
+}
+
+// Type guard for detecting Tenet schemas
+if (isTenetSchema(unknownObject)) {
+  // TypeScript now knows it's a TenetSchema
+}
+
+// JSON Schema URL for IDE integration
+console.log(SCHEMA_URL); // "https://tenet.dev/schema/v1.json"
+```
+
 ### Reactive UI Pattern
 
 ```typescript
