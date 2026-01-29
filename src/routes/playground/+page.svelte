@@ -547,7 +547,7 @@
                             {#if uiSchema?.temporal_map?.length}
                                 {@const activeBranch = uiSchema.temporal_map.find(b => b.status === 'ACTIVE')}
                                 {#if activeBranch?.logic_version}
-                                    <span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-600">
+                                    <span class="px-2 py-0.5 rounded text-xs bg-primary/20 text-primary">
                                         {activeBranch.logic_version}
                                     </span>
                                 {/if}
@@ -568,7 +568,7 @@
                                             <label for={fieldId} class="block text-sm font-medium {def.readonly ? 'text-muted-foreground' : ''}">
                                                 {def.label || fieldId}
                                                 {#if def.required}
-                                                    <span class="text-red-500">*</span>
+                                                    <span class="text-destructive">*</span>
                                                 {/if}
                                             </label>
 
@@ -663,7 +663,7 @@
                                                     <label for={attId} class="text-sm cursor-pointer">
                                                         {att.statement}
                                                         {#if att.required}
-                                                            <span class="text-red-500">*</span>
+                                                            <span class="text-destructive">*</span>
                                                         {/if}
                                                     </label>
                                                     {#if att.law_ref}
@@ -692,8 +692,8 @@
                         {#if uiErrors.length > 0}
                             <div class="space-y-2">
                                 {#each uiErrors as error}
-                                    <div class="flex items-start gap-2 p-3 rounded-md bg-red-500/10 border border-red-500/20">
-                                        <span class="text-red-500 text-sm">
+                                    <div class="flex items-start gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                                        <span class="text-destructive text-sm">
                                             {#if error.field_id}
                                                 <span class="font-medium">{error.field_id}:</span>
                                             {/if}
@@ -706,8 +706,8 @@
                                 {/each}
                             </div>
                         {:else if uiSchema}
-                            <div class="flex items-center gap-2 p-3 rounded-md bg-green-500/10 border border-green-500/20">
-                                <span class="text-green-600 text-sm">No validation errors</span>
+                            <div class="flex items-center gap-2 p-3 rounded-md bg-success/10 border border-success/20">
+                                <span class="text-success text-sm">No validation errors</span>
                             </div>
                         {:else}
                             <p class="text-sm text-muted-foreground">Run the schema to see validation results.</p>

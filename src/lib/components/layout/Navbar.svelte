@@ -2,34 +2,55 @@
     import Button from "$lib/components/ui/Button.svelte";
     import { Github, Sun, Moon } from "lucide-svelte";
     import { browser } from "$app/environment";
+    import { onMount } from "svelte";
 
     // Theme state: 'light', 'dark', or 'system'
     let theme = $state('system');
+    let systemPrefersDark = $state(false);
+    let mounted = $state(false);
 
-    // Initialize theme from localStorage
-    if (browser) {
+    onMount(() => {
+        // Initialize theme from localStorage
         const stored = localStorage.getItem('theme');
         if (stored === 'light' || stored === 'dark') {
             theme = stored;
-            applyTheme(stored);
         }
-    }
 
-    function applyTheme(newTheme) {
-        if (!browser) return;
+        // Get initial system preference
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        systemPrefersDark = mediaQuery.matches;
+
+        // Listen for system preference changes
+        const handleChange = (e) => {
+            systemPrefersDark = e.matches;
+        };
+        mediaQuery.addEventListener('change', handleChange);
+
+        mounted = true;
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    });
+
+    // Derive the effective theme
+    let effectiveTheme = $derived(
+        theme === 'system' ? (systemPrefersDark ? 'dark' : 'light') : theme
+    );
+
+    // Apply theme class based on effective theme (always set .dark or .light for Tailwind)
+    $effect(() => {
+        if (!browser || !mounted) return;
         const root = document.documentElement;
+
+        // Always apply the effective theme class for Tailwind dark: variants
         root.classList.remove('light', 'dark');
-        if (newTheme !== 'system') {
-            root.classList.add(newTheme);
-        }
-    }
+        root.classList.add(effectiveTheme);
+    });
 
     function toggleTheme() {
         // Cycle: system -> light -> dark -> system
         if (theme === 'system') {
-            // Check current appearance to decide next
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            theme = isDark ? 'light' : 'dark';
+            // Toggle opposite of current appearance
+            theme = systemPrefersDark ? 'light' : 'dark';
         } else if (theme === 'light') {
             theme = 'dark';
         } else {
@@ -41,16 +62,10 @@
         } else {
             localStorage.setItem('theme', theme);
         }
-        applyTheme(theme);
     }
 
     // Determine if currently showing dark mode
-    let isDark = $derived.by(() => {
-        if (!browser) return false;
-        if (theme === 'dark') return true;
-        if (theme === 'light') return false;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    });
+    let isDark = $derived(effectiveTheme === 'dark');
 </script>
 
 <header

@@ -1,9 +1,12 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+/* Configure dark mode to use .dark class on :root */
+@custom-variant dark (&:is(.dark, .dark *));
+
 /* ==========================================================================
    Neubrutalist Design System for Tenet Docs
-   Color Palette: Indigo + Gold (Law-as-Code aesthetic)
+   Color Palette: Indigo + Gold
    ========================================================================== */
 
 @theme {
