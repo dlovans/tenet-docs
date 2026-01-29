@@ -8,7 +8,7 @@
 <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
     <div class="flex gap-8 lg:gap-16">
         <!-- Left Sidebar -->
-        <aside class="hidden md:block w-[200px] shrink-0">
+        <aside class="hidden md:block w-50 shrink-0">
             <div
                 class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pr-8"
             >
@@ -28,7 +28,7 @@
         </main>
 
         <!-- Right Sidebar (Table of Contents) -->
-        <aside class="hidden xl:block w-[200px] shrink-0">
+        <aside class="hidden xl:block w-50 shrink-0">
             <div
                 class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pl-8"
             >

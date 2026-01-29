@@ -8,27 +8,20 @@
 npm install @dlovans/tenet-core
 ```
 
-### Browser Setup
+### Setup
 
-```html
-<script src="node_modules/@dlovans/tenet-core/wasm/wasm_exec.js"></script>
-<script type="module">
-import { init, run, verify } from '@dlovans/tenet-core';
+The TypeScript package is pure TypeScript with no WASM dependencies. It works in both browser and Node.js environments without any initialization.
 
-await init('/path/to/tenet.wasm');
-</script>
-```
+```typescript
+import { run, verify, isReady } from '@dlovans/tenet-core';
 
-### Node.js Setup
-
-```javascript
-import { init, run, verify, lint } from '@dlovans/tenet-core';
-
-// Initialize WASM (required for run/verify)
-await init('./node_modules/@dlovans/tenet-core/wasm/tenet.wasm');
+// No initialization needed - ready to use immediately
+console.log(isReady()); // Always true
 ```
 
 ### Run
+
+Execute the schema logic for a given effective date.
 
 ```typescript
 import { run, TenetResult } from '@dlovans/tenet-core';
@@ -50,7 +43,15 @@ if (result.error) {
 }
 ```
 
+**Parameters:**
+- `schema` - TenetSchema object or JSON string
+- `date` - Effective date (Date object or ISO 8601 string). Defaults to current date.
+
+**Returns:** `TenetResult` with either `result` (the transformed schema) or `error` (parse/system error).
+
 ### Verify
+
+Verify that a completed document was correctly derived from a base schema.
 
 ```typescript
 import { verify, TenetVerifyResult } from '@dlovans/tenet-core';
@@ -61,47 +62,21 @@ console.log(result.valid); // true or false
 console.log(result.error); // Error message if invalid
 ```
 
-### Lint
+**Parameters:**
+- `newSchema` - The submitted/completed schema
+- `oldSchema` - The original base schema
 
-**Note:** Lint is pure TypeScript — no WASM init required!
-
-```typescript
-import { lint, LintResult } from '@dlovans/tenet-core';
-
-const result: LintResult = lint(schema);
-
-console.log(result.valid); // true if no errors
-
-for (const issue of result.issues) {
-  console.log(`${issue.severity}: ${issue.message}`);
-  // severity: 'error' | 'warning' | 'info'
-}
-```
-
-The linter performs 5 static checks:
-1. **Schema identification** — Suggests adding `protocol` or `$schema`
-2. **Undefined variables** — Detects `{ "var": "x" }` where `x` isn't defined
-3. **Potential cycles** — Warns when multiple rules set the same field
-4. **Temporal validation** — Checks `temporal_map` entries have `logic_version`
-5. **Missing types** — Warns when definitions lack a `type`
+**Returns:** `TenetVerifyResult` with `valid` boolean and optional `error` message.
 
 ### Utility Functions
 
 ```typescript
-import { isReady, isTenetSchema, SCHEMA_URL } from '@dlovans/tenet-core';
+import { isReady } from '@dlovans/tenet-core';
 
-// Check if WASM is initialized
+// Check if the VM is ready (always true for pure TypeScript)
 if (isReady()) {
   const result = run(schema);
 }
-
-// Type guard for detecting Tenet schemas
-if (isTenetSchema(unknownObject)) {
-  // TypeScript now knows it's a TenetSchema
-}
-
-// JSON Schema URL for IDE integration
-console.log(SCHEMA_URL); // "https://tenet.dev/schema/v1.json"
 ```
 
 ### Reactive UI Pattern
@@ -110,10 +85,10 @@ console.log(SCHEMA_URL); // "https://tenet.dev/schema/v1.json"
 function onFieldChange(fieldId: string, newValue: any) {
   // Update the schema
   schema.definitions[fieldId].value = newValue;
-  
+
   // Re-run the VM
   const result = run(schema, new Date());
-  
+
   if (!result.error) {
     updateUI(result.result);
   }
@@ -122,25 +97,67 @@ function onFieldChange(fieldId: string, newValue: any) {
 function updateUI(schema: TenetSchema) {
   for (const [id, def] of Object.entries(schema.definitions)) {
     const element = document.getElementById(id);
-    
+
     // Show/hide based on visibility
     element.hidden = !def.visible;
-    
+
     // Disable computed fields
     if (def.readonly) {
       element.setAttribute('disabled', 'true');
     }
-    
+
     // Update constraints
     if (def.min !== undefined) element.min = def.min;
     if (def.max !== undefined) element.max = def.max;
   }
-  
+
   // Display errors
   for (const error of schema.errors || []) {
     showError(error.field_id, error.message);
   }
 }
+```
+
+---
+
+## Go
+
+### Installation
+
+```bash
+go get github.com/dlovans/tenet/pkg/tenet
+```
+
+### Run
+
+```go
+import (
+    "time"
+    tenet "github.com/dlovans/tenet/pkg/tenet"
+)
+
+jsonSchema := `{
+  "definitions": {
+    "amount": {"type": "number", "value": 500}
+  }
+}`
+
+result, err := tenet.Run(jsonSchema, time.Now())
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Println(result) // JSON string with computed state
+```
+
+### Verify
+
+```go
+valid, err := tenet.Verify(newJson, oldJson)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(valid) // true or false
 ```
 
 ---
@@ -156,7 +173,7 @@ interface TenetSchema {
   logic_tree?: Rule[];
   state_model?: StateModel;
   attestations?: Record<string, Attestation>;
-  temporal_map?: TemporalEntry[];
+  temporal_map?: TemporalBranch[];
   errors?: ValidationError[];
   status?: 'READY' | 'INCOMPLETE' | 'INVALID';
 }
@@ -202,20 +219,38 @@ interface ValidationError {
   law_ref?: string;
 }
 
-interface LintResult {
-  valid: boolean;
-  issues: LintIssue[];
-}
-
-interface LintIssue {
-  severity: 'error' | 'warning' | 'info';
-  field?: string;
-  rule?: string;
-  message: string;
+interface TenetResult {
+  result?: TenetSchema;
+  error?: string;
 }
 
 interface TenetVerifyResult {
   valid: boolean;
   error?: string;
 }
+
+interface TemporalBranch {
+  valid_range: [string | null, string | null];
+  logic_version: string;
+  status: 'ACTIVE' | 'ARCHIVED';
+}
 ```
+
+---
+
+## Migration from v0.1.x
+
+If you were using the WASM-based version:
+
+```typescript
+// OLD (v0.1.x with WASM)
+import { init, run } from '@dlovans/tenet-core';
+await init('/path/to/tenet.wasm');
+const result = run(schema);
+
+// NEW (v0.2.x pure TypeScript)
+import { run } from '@dlovans/tenet-core';
+const result = run(schema);  // No init required!
+```
+
+The `init()` function still exists for backwards compatibility but is a no-op.

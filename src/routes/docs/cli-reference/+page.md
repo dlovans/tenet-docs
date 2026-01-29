@@ -1,6 +1,8 @@
 # CLI Reference
 
-Tenet provides a command-line interface for processing schemas, verification, and linting.
+Tenet provides a command-line interface (Go only) for processing schemas, verification, and linting.
+
+> **Note:** The CLI is built from Go and requires Go to compile. For JavaScript/TypeScript applications, use the npm package directly. The `lint` command is only available via the Go CLI.
 
 ## Installation
 

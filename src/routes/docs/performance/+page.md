@@ -38,9 +38,11 @@ go test -bench=. -benchtime=3s -benchmem ./pkg/tenet
 | API batch processing | 1000/sec | 40,000/sec | 6,700/sec | ✅ |
 | Compliance audit | &lt;1sec | 0.025ms | 0.15ms | ✅ |
 
-## Static Linter
+## Static Linter (Go CLI Only)
 
 The linter is a **development-time tool** for schema authors. It performs static analysis *without* executing the schema.
+
+> **Note:** The linter is only available via the Go CLI (`tenet lint`). The TypeScript npm package does not include a separate lint function — instead, all validation is performed at runtime by `run()`.
 
 ```bash
 tenet lint -file schema.json
@@ -62,7 +64,13 @@ tenet lint -file schema.json
 - Catching typos in variable names
 - Identifying conflicting rules early
 
-**Note:** Runtime cycle detection is also built into `Run()` — it warns when different rules set the same field during execution.
+**Runtime validation:** The VM's `run()` function (in both Go and TypeScript) performs comprehensive validation including:
+- Undefined variable detection
+- Unknown operator detection
+- Cycle detection (warns when different rules set the same field)
+- Temporal map validation (overlapping ranges, same start/end dates)
+
+All validation errors are returned in `result.errors` without failing execution.
 
 ## Performance Considerations
 
@@ -70,7 +78,7 @@ tenet lint -file schema.json
 
 2. **Memory allocations** — ~300 allocations per run. Acceptable for validation, not for per-frame game loops.
 
-3. **WASM overhead** — Browser WASM is ~2-3x slower than native Go. Still sub-millisecond.
+3. **TypeScript vs Go** — The TypeScript implementation is pure JS with no WASM dependencies. Performance is comparable for typical schemas.
 
 4. **Cycle detection** — Adds ~2 allocations per `set` operation. Negligible overhead.
 

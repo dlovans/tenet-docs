@@ -14,12 +14,14 @@
                 { title: "Operators", href: "/docs/operators" },
                 { title: "Temporal Routing", href: "/docs/temporal-routing" },
                 { title: "Verification", href: "/docs/verification" },
+                { title: "Errors", href: "/docs/errors" },
             ],
         },
         {
             title: "Developers",
             items: [
                 { title: "API Reference", href: "/docs/api-reference" },
+                { title: "CLI Reference", href: "/docs/cli-reference" },
                 { title: "Performance", href: "/docs/performance" },
             ],
         },
