@@ -35,7 +35,7 @@
 <div class="w-full">
     {#each sidebarNavItems as group, i}
         <div class={cn("pb-4", i !== 0 && "pt-4")}>
-            <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
+            <h4 class="mb-2 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-primary">
                 {group.title}
             </h4>
             {#if group.items?.length}
@@ -44,9 +44,9 @@
                         <a
                             href={item.href}
                             class={cn(
-                                "group flex w-full items-center rounded-md px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors",
+                                "group flex w-full items-center px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all border-l-3 border-transparent",
                                 $page.url.pathname === item.href &&
-                                    "font-medium text-foreground bg-muted",
+                                    "font-medium text-foreground bg-secondary border-l-3 border-accent",
                             )}
                         >
                             {item.title}

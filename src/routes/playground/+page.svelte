@@ -410,18 +410,18 @@
     }
 </script>
 
-<div class="flex h-[calc(100vh-3.5rem)] flex-col">
+<div class="flex h-[calc(100vh-4rem)] flex-col">
     <!-- Toolbar -->
     <div
-        class="mx-auto max-w-screen-2xl w-full flex items-center justify-between border-b py-2 px-4 sm:px-6 lg:px-8"
+        class="mx-auto max-w-screen-2xl w-full flex items-center justify-between border-b-2 border-border py-3 px-4 sm:px-6 lg:px-8 bg-secondary/30"
     >
-        <div class="flex items-center gap-3">
-            <h2 class="text-lg font-semibold">Playground</h2>
+        <div class="flex items-center gap-4">
+            <h2 class="text-xl font-mono font-bold text-primary">Playground</h2>
             <div class="relative">
                 <select
                     value={selectedExample}
                     onchange={(e) => handleExampleChange(e.target.value)}
-                    class="appearance-none rounded-md border bg-background pl-3 pr-8 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                    class="appearance-none rounded-lg border-2 border-border bg-card pl-3 pr-8 py-2 text-sm font-medium shadow-[2px_2px_0_0_var(--shadow)] focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer transition-all hover:shadow-[3px_3px_0_0_var(--shadow)]"
                 >
                     {#each Object.entries(examples) as [key, example]}
                         <option value={key}>{example.name}</option>
@@ -430,26 +430,26 @@
                 <ChevronDown class="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
             {#if initError}
-                <span class="text-sm text-red-500">{initError}</span>
+                <span class="text-sm text-destructive font-medium">{initError}</span>
             {:else if isInitializing}
-                <span class="flex items-center text-sm text-muted-foreground">
+                <span class="flex items-center text-sm text-muted-foreground font-mono">
                     <Loader2 class="mr-2 h-4 w-4 animate-spin" />
                     Loading VM...
                 </span>
             {/if}
             <!-- View Mode Toggle -->
-            <div class="flex items-center rounded-md border bg-muted/40 p-0.5">
+            <div class="flex items-center rounded-lg border-2 border-border bg-card p-1 shadow-[2px_2px_0_0_var(--shadow)]">
                 <button
-                    class="flex items-center gap-1 rounded px-2 py-1 text-sm transition-colors {viewMode === 'code' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
+                    class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all {viewMode === 'code' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
                     onclick={() => viewMode = 'code'}
                 >
                     <Code class="h-4 w-4" />
                     Code
                 </button>
                 <button
-                    class="flex items-center gap-1 rounded px-2 py-1 text-sm transition-colors {viewMode === 'ui' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
+                    class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all {viewMode === 'ui' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
                     onclick={() => viewMode = 'ui'}
                 >
                     <PanelLeft class="h-4 w-4" />
@@ -457,26 +457,26 @@
                 </button>
             </div>
             {#if viewMode === 'code'}
-                <label class="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+                <label class="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none font-medium">
                     <input
                         type="checkbox"
                         bind:checked={autoRun}
-                        class="h-4 w-4 rounded border-muted-foreground/50"
+                        class="h-4 w-4 rounded border-2 border-border accent-accent"
                     />
                     Auto-run
                 </label>
             {/if}
             <Button variant="outline" size="sm" onclick={resetSchema} disabled={isRunning}>
-                <RotateCcw class="mr-2 h-4 w-4" />
+                <RotateCcw class="h-4 w-4" />
                 Reset
             </Button>
             {#if viewMode === 'code' && !autoRun}
                 <Button size="sm" onclick={runSchema} disabled={isInitializing || isRunning || !!initError}>
                     {#if isRunning}
-                        <Loader2 class="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 class="h-4 w-4 animate-spin" />
                         Running...
                     {:else}
-                        <Play class="mr-2 h-4 w-4" />
+                        <Play class="h-4 w-4" />
                         Run
                     {/if}
                 </Button>
@@ -489,9 +489,9 @@
         {#if viewMode === 'code'}
             <div class="grid h-full grid-cols-1 md:grid-cols-2">
                 <!-- Input -->
-                <div class="flex h-full flex-col border-r overflow-hidden">
+                <div class="flex h-full flex-col border-r-2 border-border overflow-hidden">
                     <div
-                        class="border-b bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground"
+                        class="border-b-2 border-border bg-secondary/50 px-4 py-2.5 text-sm font-mono font-semibold text-primary"
                     >
                         Schema Input
                     </div>
@@ -515,9 +515,9 @@
                 </div>
 
                 <!-- Output -->
-                <div class="flex h-full flex-col bg-muted/10 overflow-hidden">
+                <div class="flex h-full flex-col bg-secondary/20 overflow-hidden">
                     <div
-                        class="border-b bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground"
+                        class="border-b-2 border-border bg-secondary/50 px-4 py-2.5 text-sm font-mono font-semibold text-primary"
                     >
                         Output
                     </div>
@@ -531,9 +531,9 @@
             <!-- UI Mode -->
             <div class="grid h-full grid-cols-1 md:grid-cols-2">
                 <!-- Form -->
-                <div class="flex h-full flex-col border-r overflow-hidden">
+                <div class="flex h-full flex-col border-r-2 border-border overflow-hidden">
                     <div
-                        class="border-b bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground flex items-center justify-between"
+                        class="border-b-2 border-border bg-secondary/50 px-4 py-2.5 text-sm font-mono font-semibold text-primary flex items-center justify-between"
                     >
                         <div class="flex items-center gap-3">
                             <span>Form</span>
@@ -553,7 +553,7 @@
                                 {/if}
                             {/if}
                             {#if uiSchema?.status}
-                                <span class="px-2 py-0.5 rounded text-xs font-medium {uiSchema.status === 'READY' ? 'bg-green-500/20 text-green-600' : uiSchema.status === 'INVALID' ? 'bg-red-500/20 text-red-600' : 'bg-yellow-500/20 text-yellow-600'}">
+                                <span class="px-2.5 py-1 rounded-md border-2 border-border text-xs font-mono font-bold shadow-[2px_2px_0_0_var(--shadow)] {uiSchema.status === 'READY' ? 'bg-success text-success-foreground' : uiSchema.status === 'INVALID' ? 'bg-destructive text-destructive-foreground' : 'bg-accent text-accent-foreground'}">
                                     {uiSchema.status}
                                 </span>
                             {/if}
@@ -682,9 +682,9 @@
                 </div>
 
                 <!-- Errors & Status -->
-                <div class="flex h-full flex-col bg-muted/10 overflow-hidden">
+                <div class="flex h-full flex-col bg-secondary/20 overflow-hidden">
                     <div
-                        class="border-b bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground"
+                        class="border-b-2 border-border bg-secondary/50 px-4 py-2.5 text-sm font-mono font-semibold text-primary"
                     >
                         Validation
                     </div>

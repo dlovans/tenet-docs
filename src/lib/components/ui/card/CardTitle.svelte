@@ -6,7 +6,7 @@
 <div
     role="heading"
     aria-level="3"
-    class={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+    class={cn("font-mono text-xl font-semibold leading-none tracking-tight text-primary", className)}
     {...rest}
 >
     {@render children?.()}
